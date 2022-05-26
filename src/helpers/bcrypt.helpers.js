@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const { reject } = require('bcrypt/promises');
 const saltRounds = 10;
 
 const hashPassword = plainPassword => {
@@ -7,6 +8,16 @@ const hashPassword = plainPassword => {
     });
 };
 
+const comparePassword = (plainPassword, passFromDb)=>{
+    return new Promise((resolve,reject)=>{
+        bcrypt.compare(plainPassword, passFromDb, function(err, result){
+            if(err) reject (err);
+            resolve (result);
+        });
+    });
+};
+
 module.exports = {
     hashPassword,
+    comparePassword,
 };
