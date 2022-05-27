@@ -2,6 +2,7 @@ const express = require("express");
 const req = require("express/lib/request");
 const { json } = require("express/lib/response");
 const { hashPassword, comparePassword } = require("../helpers/bcrypt.helpers");
+const { createAccessJWT, createRefreshJWT } = require("../helpers/jwt.helpers");
 const { insertUser, getUserbyEmail } = require("../model/user/User.model");
 const { route}  = require("./ticket.router");
 const router = express.Router();
@@ -20,7 +21,8 @@ router.post("/", async(req, res) => {
 
         const newUserObj = {
             name, 
-            company, 
+            company, createAccessJWT,
+            createRefreshJWT,
             address, 
             phone, 
             email, 
@@ -49,13 +51,25 @@ router.post("/login", async (req,res) =>{
         const user = await getUserbyEmail(email);
         console.log(user);
         const passFromDb = user && user.id ? user.password : null;
-        if(!passFromDb) return res.json({status: "error", message: "Invalid email or password"});
+        
+        if(!passFromDb) 
+            return res.json({status: "error", message: "Invalid email or password"
+        });
+       
         const result = await comparePassword(password, passFromDb);
         console.log(result);
-        if (result) {
-            return res.json({status:"success", message: "Login Successful"});
+        
+        if (!result) {
+            return res.json({status: "error", message: "Incorrect Password"}); 
         }
-        return res.json({status: "unauthorized", message: "Incorrect Password"});
+        const accessJWT = await createAccessJWT(user.email);
+        const refreshJWT = await createRefreshJWT(user.email);
+        return res.json({
+            status:"success", 
+            message: "Login Successful",
+            accessJWT,
+            refreshJWT,
+        });
 
     } catch (error) {
         console.log(error);
