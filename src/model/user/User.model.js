@@ -16,17 +16,42 @@ const getUserbyEmail = email =>{
         try{ 
             UserSchema.findOne({email}, (error, data)=>{
             if(error){
-                resolve(error);
+                reject(error);
             }
             resolve(data);
-            })
+            }
+        ).clone();
+        //.then(data => resolve(data))
+        // .catch((error) => reject(error));
         } catch (error) {
             reject(error);
         }
     });
 };
 
+const storeUserRefreshJWT = (_id, token) => {
+    console.log(_id);
+    return new Promise((resolve, reject)=>{
+        try {
+            UserSchema.findOneAndUpdate(
+                {_id},
+                {$set: {"refreshJWT.token": token, "refreshJWT.addedAt": Date.now()}},
+                {new: true}, (error, data) =>{
+                    if(error){
+                        reject(error);
+                    }
+                    resolve(data);
+                    console.log(data);
+                    }
+            ).clone();
+        } catch (error) {
+            reject(error);        
+        }
+    })
+}
+
 module.exports = {
     insertUser,
     getUserbyEmail,
+    storeUserRefreshJWT,
 };
