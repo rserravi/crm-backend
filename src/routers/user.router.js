@@ -3,16 +3,26 @@ const req = require("express/lib/request");
 const { json } = require("express/lib/response");
 const { hashPassword, comparePassword } = require("../helpers/bcrypt.helpers");
 const { createAccessJWT, createRefreshJWT } = require("../helpers/jwt.helpers");
-const { insertUser, getUserbyEmail } = require("../model/user/User.model");
+const { insertUser, getUserbyEmail, getUserbyId } = require("../model/user/User.model");
 const { route}  = require("./ticket.router");
 const router = express.Router();
+const { userAuthorization} = require("../middleware/authorization.middleware");
  
  
 router.all("/", (req, res, next) =>{
    //res.json({message: "return form user router"});
    next();
 });
+
+//Get user profile router
+router.get("/", userAuthorization, async(req,res)=>{
+    const _id = req.userId;
+    const userProf = await getUserbyId(_id);
+    res.json ({user: userProf});
+})
+
  
+//Create new user router
 router.post("/", async(req, res) => {
    const {name, company, address, phone, email, password } = req.body;
    try {
@@ -74,5 +84,6 @@ router.post("/login", async (req,res) =>{
        console.log(error);
    } 
 });
+
 
 module.exports = router;

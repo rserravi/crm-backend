@@ -50,8 +50,26 @@ const storeUserRefreshJWT = (_id, token) => {
     })
 }
 
+const getUserbyId = userId =>{
+    return new Promise((resolve,reject)=>{
+        if((!userId)) return false;
+        try{ 
+            UserSchema.findOne({userId}, (error, data)=>{
+            if(error){
+                reject(error);
+            }
+            resolve(data);
+            }
+        ).clone();
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
+
 module.exports = {
     insertUser,
     getUserbyEmail,
+    getUserbyId,
     storeUserRefreshJWT,
 };
