@@ -22,4 +22,4 @@ Content-Type: application/json
 
 ### Get a user profile endpoint
 GET http://localhost:3001/v1/user
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVAZS5jb20iLCJpYXQiOjE2NTM4Mzk2NzQsImV4cCI6MTY1Mzg0MDU3NH0.aeoMEyvdFkURkyYKtgbqdoyuSblUJ6dzxigjyw1nhyE
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVAZS5jb20iLCJpYXQiOjE2NTM5MDAxNTcsImV4cCI6MTY1MzkwMTA1N30.oZTWgpSLs-0qh2JoFYm8U0TMO5X7EmQwsiklRzPmWoE

@@ -8,7 +8,9 @@ const userAuthorization =  async (req, res, next) => {
     const decoded = await verifyAccessJWT(authorization);
     if(decoded.email){
         //2. check if jwt exist in redis
+  
         const userId = await getJWT(authorization);
+
         console.log(userId);
 
         if (!userId){
