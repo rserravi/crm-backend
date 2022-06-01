@@ -21,8 +21,6 @@ const getUserbyEmail = email =>{
             resolve(data);
             }
         ).clone();
-        //.then(data => resolve(data))
-        // .catch((error) => reject(error));
         } catch (error) {
             reject(error);
         }
