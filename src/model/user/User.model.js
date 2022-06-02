@@ -65,9 +65,30 @@ const getUserbyId = userId =>{
     });
 };
 
+const updatePassword = (email, newHashedPass) =>{
+    return new Promise((resolve,reject)=>{
+        try {
+            UserSchema.findOneAndUpdate(
+                {email},
+                {$set:{"password": newHashedPass}},
+                {new: true}, (error, data) =>{
+                    if(error){
+                        reject(error);
+                    }
+                    resolve(data);
+                    console.log(data);
+                    }
+            ).clone();
+        } catch (error) {
+            reject(error);        
+        }
+    })
+}
+
 module.exports = {
     insertUser,
     getUserbyEmail,
     getUserbyId,
     storeUserRefreshJWT,
+    updatePassword,
 };

@@ -11,29 +11,7 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-/* const send = (info) =>{
-    // send mail with defined transport object
-    console.log(info);
-    return new Promise((resolve, reject)=>{
-        try {
-            console.log("A PUNTO DE ENVIO");
-            console.log(transporter);
-            let result = transporter.sendMail({info});
-            console.log("ENVIADO");
-            console.log("Message sent: %s", result.messageId);
-            console.log("Preview URL :%s", nodemailer.getTestMessageUrl(result));
-            
-            resolve(result);
-        } catch (error) {
-            console.log("NO HEMOS PODIDO ENVIAR!")
-            console.log(error);
-            reject(error);
-        }
-    })  
-} */
-
 const send = async (message) =>{
-    console.log("Paso 3: antes del sendmail");
     await transporter.sendMail(message, (error, info) => {
         if (error) {
             console.log('Error occurred');
@@ -46,14 +24,12 @@ const send = async (message) =>{
 
         // only needed when using pooled connections
         //transporter.close();
-        console.log("Paso 4: antes de return desde send");
         console.log(info);
         return info;
     });
 }
 
 const emailProcessor = (email, pin)=>{
-    console.log("Paso 2, en funcion emailProcessor");
     const info = {
         from: '"Leanne Wiegand 👻" <leanne.wiegand57@ethereal.email>', // sender address
         to: email + "", // list of receivers
@@ -66,7 +42,6 @@ const emailProcessor = (email, pin)=>{
             `, //html body
     }
     retorno = send(info);
-    console.log("Paso 5: antes del return desde emailProcessor");
     return retorno;
 }
 
