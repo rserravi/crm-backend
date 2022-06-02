@@ -8,6 +8,7 @@ const { route}  = require("./ticket.router");
 const router = express.Router();
 const { userAuthorization} = require("../middleware/authorization.middleware");
 const { setPasswordResetPin } = require("../model/restPin/RestPin.model");
+const { emailProcessor } = require("../helpers/email.helpers");
  
  
 router.all("/", (req, res, next) =>{
@@ -100,8 +101,19 @@ router.post("/reset-password", async (req, res)=>{
         //3- create unique 6 digit pin
         //4- save pin and email in database         
        const setPin = await setPasswordResetPin(email);
+       console.log("PASO 1: Antes de enviar");
+       const result = await emailProcessor(email, setPin.pin);
+       console.log("Paso 6: Despues de emailprocessor, ya en user.router")
+
+       console.log(result);
+
+       if (result && result.messageId){
+        res.json({status: "success", message:"If the email exists in our databes, the password reset pin will be send shortly"});
+       }
+
        return res.json(setPin);
     }
+    res.json({status: "error", message:"unable to process your request at the moment - Try again later"});
 
     res.json({status: "error", message:"If the email exists in our databes, the password reset pin will be send shortly"});
 });
