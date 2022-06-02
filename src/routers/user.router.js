@@ -7,7 +7,7 @@ const { insertUser, getUserbyEmail, getUserbyId, updatePassword } = require("../
 const { route}  = require("./ticket.router");
 const router = express.Router();
 const { userAuthorization} = require("../middleware/authorization.middleware");
-const { setPasswordResetPin, getPinbyEmailPin } = require("../model/restPin/RestPin.model");
+const { setPasswordResetPin, getPinbyEmailPin, deletePin } = require("../model/restPin/RestPin.model");
 const { emailProcessor } = require("../helpers/email.helpers");
  
  
@@ -102,7 +102,7 @@ router.post("/reset-password", async (req, res)=>{
         //4- save pin and email in database         
        const setPin = await setPasswordResetPin(email);
         //5 - email the pìn
-       const result = await emailProcessor(email, setPin.pin);
+       const result = await emailProcessor(email, setPin.pin, "request new password");
 
        console.log(result);
 
@@ -138,9 +138,15 @@ router.patch("/reset-password", async (req, res)=>{
         //4- update password in DB
         const user = await updatePassword(email,hashedPass);
         if (user._id) {
+            // 5- send email notification
+            const result = await emailProcessor(email, "", "password update success");
+             if (result && result.messageId){
+                res.json({status: "success", message:"Confirmation email sent. Check your inbox"});
+             }
+             //6- delete pins from database
+            deletePin(email,pin);
             return res.json({status: "success", message:"Your password has been updated"})
         }
-
     }   
     res.json({status: "error", message:"Unable to update your password. Please, try again later."});
 });
