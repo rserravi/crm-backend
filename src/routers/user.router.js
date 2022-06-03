@@ -3,13 +3,14 @@ const req = require("express/lib/request");
 const { json } = require("express/lib/response");
 const { hashPassword, comparePassword } = require("../helpers/bcrypt.helpers");
 const { createAccessJWT, createRefreshJWT } = require("../helpers/jwt.helpers");
-const { insertUser, getUserbyEmail, getUserbyId, updatePassword } = require("../model/user/User.model");
+const { insertUser, getUserbyEmail, getUserbyId, updatePassword, storeUserRefreshJWT } = require("../model/user/User.model");
 const { route}  = require("./ticket.router");
 const router = express.Router();
 const { userAuthorization} = require("../middleware/authorization.middleware");
 const { setPasswordResetPin, getPinbyEmailPin, deletePin } = require("../model/restPin/RestPin.model");
 const { emailProcessor } = require("../helpers/email.helpers");
 const { resetPassReqValidation, updatePassValidation } = require("../middleware/formValidadtion.middleware");
+const { deleteJWT } = require("../helpers/redis.helpers");
  
  
 router.all("/", (req, res, next) =>{
@@ -151,5 +152,22 @@ router.patch("/reset-password", updatePassValidation, async (req, res)=>{
     }   
     res.json({status: "error", message:"Unable to update your password. Please, try again later."});
 });
+
+//Log out and clear tokens
+router.delete("/logout", userAuthorization, async(req,res)=>{
+    //1 - get jwt and verify // DONE by Middleware
+
+    const {authorization} = req.headers;
+    const _id = req.userId;
+    //2 - delete accessJWT form redis database
+    deleteJWT({authorization});
+    //3 - delete refreshJWT from mongodb
+    const result = await storeUserRefreshJWT(_id, "");
+    if (result._id){
+        return res.json({status:"success", message:"Logged out"});
+    }
+    res.json({status:"error", message:"Unable to log you out. Try again later"});
+
+})
 
 module.exports = router;
