@@ -9,6 +9,7 @@ const router = express.Router();
 const { userAuthorization} = require("../middleware/authorization.middleware");
 const { setPasswordResetPin, getPinbyEmailPin, deletePin } = require("../model/restPin/RestPin.model");
 const { emailProcessor } = require("../helpers/email.helpers");
+const { resetPassReqValidation, updatePassValidation } = require("../middleware/formValidadtion.middleware");
  
  
 router.all("/", (req, res, next) =>{
@@ -88,7 +89,7 @@ router.post("/login", async (req,res) =>{
 });
 
 //Reset password 
-router.post("/reset-password", async (req, res)=>{
+router.post("/reset-password", resetPassReqValidation, async (req, res)=>{
 
     //A - Create and send password reset pin number
     //1- receive email
@@ -114,11 +115,11 @@ router.post("/reset-password", async (req, res)=>{
     }
     res.json({status: "error", message:"unable to process your request at the moment - Try again later"});
 
-    res.json({status: "error", message:"If the email exists in our databes, the password reset pin will be send shortly"});
+    res.json({status: "error", message:"If the email exists in ourAdde databes, the password reset pin will be send shortly"});
 });
 
 //Update password in DB
-router.patch("/reset-password", async (req, res)=>{
+router.patch("/reset-password", updatePassValidation, async (req, res)=>{
     // 1- receive email, pin and new password
     const {email, pin, newPassword} = req.body;
     // 2- validate pin
