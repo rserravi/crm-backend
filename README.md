@@ -15,14 +15,14 @@ Note: Make sure you have nodemon is installed in your system otherwise you can i
 
 All the user API router follows '/v1/user/'
 
-| #     | Routers                          | Verbs | Progress | Is Private | Description                                      |
-| ----- | -------------------------------- | ----- | -------- | ---------- | ------------------------------------------------ |
-| 1     | '/v1/user/login'                 | POST  | DONE     | No         | Verify user authentication and return JWT        |
-| 2     | '/v1/user/reset-password'        | POST  | DONE     | No         | Verify email and email pin to reset the password |
-| 3     | '/v1/user/reset-password'        | PATCH | DONE     | No         | Replace with new password.                       |
-| 4     | '/v1/user/logout'                | PATCH | TODO     | No         | Replace with new password.                       |
-| 5     | '/v1/user/'                      | GET   | DONE     | Yes        | Get users info                                   |
-| 6     | '/v1/user/'                      | POST  | DONE     | Yes        | Create a user                                    |
+| #     | Routers                          | Verbs  | Progress | Is Private | Description                                      |
+| ----- | -------------------------------- | ------ | -------- | ---------- | ------------------------------------------------ |
+| 1     | '/v1/user/login'                 | POST   | DONE     | No         | Verify user authentication and return JWT        |
+| 2     | '/v1/user/reset-password'        | POST   | DONE     | No         | Verify email and email pin to reset the password |
+| 3     | '/v1/user/reset-password'        | PATCH  | DONE     | No         | Replace with new password.                       |
+| 4     | '/v1/user/logout'                | DELETE | TODO     | Yes        | Delete user accessJWT.                           |
+| 5     | '/v1/user/'                      | GET    | DONE     | Yes        | Get users info                                   |
+| 6     | '/v1/user/'                      | POST   | DONE     | Yes        | Create a user                                    |
 
 ### Ticket API resources
 
