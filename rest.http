@@ -27,8 +27,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVAZS5jb20iLCJp
 ### Get Refresh Token
 GET http://localhost:3001/v1/tokens
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjoiZUBlLmNvbSIsImlhdCI6MTY1Mzk5MTgyNywiZXhwIjoxNjU2NTgzODI3fQ.9Ky2L8rJ9H5gty8xS6KXqHkbh7l0HqCxpNR5cwSkB-0
-
-### Password reset endpoints
+login
 POST http://localhost:3001/v1/user/reset-password
 Content-Type: application/json
 
