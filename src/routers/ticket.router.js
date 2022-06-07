@@ -1,5 +1,6 @@
 const express = require("express");
 const { userAuthorization } = require("../middleware/authorization.middleware");
+const { createNewTicketValidation, replayTicketMessageValidation } = require("../middleware/formValidadtion.middleware");
 const { insertTicket, getTickets, getTicketById, updateClientReply, updateStatusClose, deleteTicket } = require("../model/ticket/ticket.model");
 const router = express.Router();
 
@@ -9,7 +10,7 @@ router.all("/", (req, res, next) =>{
 });
 
 // Create new ticket
-router.post("/", userAuthorization, async (req,res)=>{
+router.post("/", createNewTicketValidation, userAuthorization, async (req,res)=>{
     try {
         //receive new ticket data
         const {subject, sender, message} = req.body;
@@ -63,7 +64,7 @@ router.get("/:_id", userAuthorization, async (req,res)=>{
 });
 
 // Update ticket details ie. reply message 
-router.put("/:_id", userAuthorization, async (req,res)=>{
+router.put("/:_id", replayTicketMessageValidation, userAuthorization, async (req,res)=>{
     try {
         const {message, sender} = req.body;
         const {_id} = req.params;
@@ -109,6 +110,5 @@ router.delete("/:_id", userAuthorization, async (req,res)=>{
         res.json({status:"error", message:error.message});
     }   
 });
-
 
 module.exports = router;
