@@ -22,7 +22,14 @@ router.all("/", (req, res, next) =>{
 router.get("/", userAuthorization, async(req,res)=>{
     const _id = req.userId;
     const userProf = await getUserbyId(_id);
-    res.json ({user: userProf});
+    const {name, email} = userProf;
+    res.json ({
+        user: {
+            _id,
+            name,
+            email,
+        },
+    });
 })
 
  
