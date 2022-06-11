@@ -54,7 +54,8 @@ router.get("/", userAuthorization, async (req,res)=>{
 router.get("/:_id", userAuthorization, async (req,res)=>{
     try {
         const {_id} = req.params;
-        const result = await getTicketById(_id, clientId);
+        const userId = req.userId;
+        const result = await getTicketById(_id, userId);
        
         return res.json({status:"success", result});
 
