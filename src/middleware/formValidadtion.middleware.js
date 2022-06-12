@@ -1,4 +1,5 @@
 const Joi = require("joi");
+const { deleteTicket } = require("../model/ticket/ticket.model");
 
 const email= Joi.string()
         .email({ minDomainSegments: 2, 
@@ -13,6 +14,7 @@ const newPassword = Joi.string()
 
 const shortStr = Joi.string().min(2).max(50);
 const longStr = Joi.string().min(2).max(1000);
+const dt = Joi.date();
                 
 
 const resetPassReqValidation = (req, res, next) =>{
@@ -39,7 +41,8 @@ const createNewTicketValidation = (req, res,next)=>{
        const schema = Joi.object({
         subject: shortStr.required(),
         sender: shortStr.required(),
-        message: longStr.required()
+        message: longStr.required(),
+        issueDate: dt.required(),
        })
        
        const value = schema.validate(req.body);
