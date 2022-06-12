@@ -4,13 +4,13 @@ const { setJWT } = require("./redis.helpers");
  
 const createAccessJWT = async(email, _id) =>{
 try {
-   const accessJTW = jwt.sign({email},
+   const accessJWT = jwt.sign({email},
        process.env.JWT_ACCESS_SECRET,
        {expiresIn:"15m"}
        );
     
-    await setJWT(accessJTW, _id);
-    return Promise.resolve(accessJTW);
+    await setJWT(accessJWT, _id);
+    return Promise.resolve(accessJWT);
            
     } catch (error) {
         return Promise.reject(error);

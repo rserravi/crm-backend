@@ -25,9 +25,9 @@ router.get("/", async (req, res, next) => {
                 return res.status(403).json({message: "Forbidden"});
             }
 
-            const accessJTW = await createAccessJWT(decoded.payload, userProf._id.toString());
+            const accessJWT = await createAccessJWT(decoded.payload, userProf._id.toString());
 
-            return res.json({status: "success", accessJTW});
+            return res.json({status: "success", accessJWT});
         }
     }
     res.status(403).json({message: "Forbidden"});
