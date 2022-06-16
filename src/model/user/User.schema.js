@@ -41,6 +41,16 @@ const UserSchema = mongoose.Schema ({
             default: Date.now()
         },
     },
+    isVerified: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
+    randomURL: {
+        type: String,
+        maxLenght: 50,
+        default:""
+    }
 });
 
 module.exports ={

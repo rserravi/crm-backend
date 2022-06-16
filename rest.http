@@ -49,3 +49,5 @@ Content-Type: application/json
 ### User Logout endopoint
 DELETE http://localhost:3001/v1/user/logout
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVAZS5jb20iLCJpYXQiOjE2NTQyNDIxMjIsImV4cCI6MTY1NDI0MzAyMn0.kodaDxlAEyKCajul2FIlpMkM4_LSf97hm7FR8P8OXB0
+
+### 

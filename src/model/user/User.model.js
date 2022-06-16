@@ -1,4 +1,3 @@
-const { reject } = require("bcrypt/promises");
 const {UserSchema} = require("./User.schema");
 
 const insertUser = userObj => {
@@ -52,6 +51,8 @@ const getUserbyId = userId =>{
     return new Promise((resolve,reject)=>{
         if((!userId)) return false;
         try{ 
+            console.log("¿AUN el mismo?");
+            console.log(userId);
             UserSchema.findOne({userId}, (error, data)=>{
             if(error){
                 reject(error);
@@ -85,10 +86,34 @@ const updatePassword = (email, newHashedPass) =>{
     })
 }
 
+const verifyUser = (randomURL,email) =>{
+    return new Promise((resolve,reject)=>{
+        try {
+            UserSchema.findOneAndUpdate(
+                {randomURL, email},
+                {$set:{"isVerified": true}}
+                )
+                    .then((data)=> {
+                        resolve(data);
+                    })
+                    .catch((error)=> {
+                        console.log(error);
+                        reject(error);
+                    })
+        } catch (error) {
+            console.log(error);
+            reject(error);        
+        }
+    })
+}
+
+
+
 module.exports = {
     insertUser,
     getUserbyEmail,
     getUserbyId,
     storeUserRefreshJWT,
     updatePassword,
+    verifyUser
 };

@@ -3,14 +3,16 @@ const req = require("express/lib/request");
 const { json } = require("express/lib/response");
 const { hashPassword, comparePassword } = require("../helpers/bcrypt.helpers");
 const { createAccessJWT, createRefreshJWT } = require("../helpers/jwt.helpers");
-const { insertUser, getUserbyEmail, getUserbyId, updatePassword, storeUserRefreshJWT } = require("../model/user/User.model");
+const { insertUser, getUserbyEmail, getUserbyId, updatePassword, storeUserRefreshJWT, verifyUser } = require("../model/user/User.model");
 const { route}  = require("./ticket.router");
 const router = express.Router();
 const { userAuthorization} = require("../middleware/authorization.middleware");
 const { setPasswordResetPin, getPinbyEmailPin, deletePin } = require("../model/restPin/RestPin.model");
 const { emailProcessor } = require("../helpers/email.helpers");
-const { resetPassReqValidation, updatePassValidation } = require("../middleware/formValidadtion.middleware");
+const { resetPassReqValidation, updatePassValidation, newUserValidation } = require("../middleware/formValidadtion.middleware");
 const { deleteJWT } = require("../helpers/redis.helpers");
+const { randomCrypto } = require("../helpers/crypto.helpers");
+const verificationURL = process.env.VERIFICATION_URL;
  
  
 router.all("/", (req, res, next) =>{
@@ -21,7 +23,11 @@ router.all("/", (req, res, next) =>{
 //Get user profile router
 router.get("/", userAuthorization, async(req,res)=>{
     const _id = req.userId;
+    console.log("¿Es el mismo user id?");
+    console.log(_id);
     const userProf = await getUserbyId(_id);
+    console.log("Getting user PROFILE");
+    console.log(userProf);
     const {name, email} = userProf;
     res.json ({
         user: {
@@ -31,15 +37,14 @@ router.get("/", userAuthorization, async(req,res)=>{
         },
     });
 })
-
  
 //Create new user router
-router.post("/", async(req, res) => {
+router.post("/", newUserValidation, async(req, res) => {
    const {name, company, address, phone, email, password } = req.body;
    try {
        //hash password
        const hashedPass = await hashPassword(password);
- 
+       const randomID = randomCrypto();
        const newUserObj = {
            name,
            company,
@@ -47,9 +52,15 @@ router.post("/", async(req, res) => {
            phone,
            email,
            password:hashedPass,
+           randomURL:randomID,
        }
        const result = await insertUser(newUserObj);
        console.log(result);
+
+       //Send confirmation email
+      
+       await emailProcessor(email, "", "new user confirmation",verificationURL + "/" + randomID+ "/" + email);
+ 
        res.json({status:"success", message: "New user created", result});
    } catch(err){
     let message = "Unable to create new user at the moment. Please contact administrator"
@@ -68,14 +79,19 @@ router.post("/login", async (req,res) =>{
  
    if (!email || !password){
        res.json({status: "error", message:"invalid form submission"});
- 
    }
  
    try {
        const user = await getUserbyEmail(email);
+       console.log("getting user in BACKEND")
        console.log(user);
+       console.log("Email :" + user.email + ". Pass = " + user.password);
        const passFromDb = user && user.id ? user.password : null;
-      
+
+       if (!user.isVerified){
+        return res.json({status: "error", message: "Please check your email to verify your account"})
+       }
+
        if(!passFromDb)
            return res.json({status: "error", message: "Invalid email or password"
        });
@@ -86,8 +102,11 @@ router.post("/login", async (req,res) =>{
        if (!result) {
            return res.json({status: "error", message: "Incorrect Password"});
        }
+
+  
        const accessJWT = await createAccessJWT(user.email, `${user._id}`);
        const refreshJWT = await createRefreshJWT(user.email, `${user._id}`);
+
        return res.json({
            status:"success",
            message: "Login Successful",
@@ -96,6 +115,7 @@ router.post("/login", async (req,res) =>{
        });
  
    } catch (error) {
+       console.log("EL ERROR SE HA PRODUCIRO EN LA RUTA user.router.js")
        console.log(error);
    } 
 });
@@ -180,5 +200,29 @@ router.delete("/logout", userAuthorization, async(req,res)=>{
     res.json({status:"error", message:"Unable to log you out. Try again later"});
 
 })
+
+//Verify user after signup
+router.patch("/verify", async(req,res)=>{
+    try {
+        randomURL = req.body.randomUrl;
+        email = req.body.email;
+        //update user database
+        const result =  await verifyUser(randomURL,email);
+        if (!result){
+            return res.json({status: "error", message: "Invalid request"})
+        }
+        if(result._id) {
+            return res.json({status: "success", message: "Your account has been activated. You may sing in now"})
+        }
+        return res.json({status: "error", message: "Invalid request"})
+    } catch (error) {
+        console.log(error)
+        return res.json({status: "error", message: error.message})
+
+    }
+  
+})
+
+
 
 module.exports = router;

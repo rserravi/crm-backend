@@ -15,6 +15,9 @@ const newPassword = Joi.string()
 const shortStr = Joi.string().min(2).max(50);
 const longStr = Joi.string().min(2).max(1000);
 const dt = Joi.date();
+const phone = Joi.number()
+        .min(00000000000000)
+        .max(99999999999999)
                 
 
 const resetPassReqValidation = (req, res, next) =>{
@@ -59,15 +62,36 @@ const replayTicketMessageValidation = (req, res,next)=>{
         })
         
         const value = schema.validate(req.body);
+        console.log(value);
         if(value.error){
                 return res.json({status: "error", message: value.error.message});
          }
          next();
  }
 
+ const newUserValidation = (req, res,next)=>{
+        const schema = Joi.object({
+         name: shortStr.required(),
+         company: shortStr,
+         address: shortStr,
+         phone: phone.required(),
+         email: email.required(),
+         password: shortStr.required(),
+         confirmPassword: shortStr
+        })
+        
+        const value = schema.validate(req.body);
+        console.log(value);
+        if(value.error){
+                return res.json({status: "error", message: value.error.message});
+         }
+         next();
+ }
+ 
 module.exports = {
         resetPassReqValidation,
         updatePassValidation,
         createNewTicketValidation,
-        replayTicketMessageValidation
+        replayTicketMessageValidation,
+        newUserValidation
 }

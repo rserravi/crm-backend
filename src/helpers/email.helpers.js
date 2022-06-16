@@ -29,8 +29,9 @@ const send = async (message) =>{
     });
 }
 
-const emailProcessor = (email, pin, type)=>{
+const emailProcessor = (email, pin, type, verificationLink)=>{
     let info = ""
+    console.log("Tipo =" + type + ". Ruta ="+verificationLink)
     switch (type) {
         case "request new password":
             info = {
@@ -62,7 +63,23 @@ const emailProcessor = (email, pin, type)=>{
             retorno = send(info);
             return retorno;
             break;
+        
+        case "new user confirmation":
+            info = {
+                from: '"Leanne Wiegand 👻" <leanne.wiegand57@ethereal.email>', // sender address
+                to: email + "", // list of receivers
+                subject: "User created. Verify new user ✔", // Subject line
+                text: "Please, follow the link to confirm that you are you", // plain text body
+                html: `<b>Please confirm your email</b>
+                    <p>Pleas, follow the <b>link</b> to confirm that you are really <b>you</b></p>
+                    <p>${verificationLink}</p>
+                    `, //html body
+            }
+            retorno = send(info);
+            return retorno;
+            break;
         default:
+            console.log("Hemos entrado en Default en emailProcessor")
             break;
     }
 }
